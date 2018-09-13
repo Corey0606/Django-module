@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="">
+    用户名<input type="text" name="user" id="usename">
+    密码 <input type="password" name="pwd" id="password">
+    <input type="button" value="submit" class="s_Ajax"><span id="result"></span>
+</form>
+
+</body>
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.0.min.js" ></script>
+<script>
+
+       $(".s_Ajax").click(function(){
+
+           $.ajax({
+               url:"/login_do/",
+               type:"POST",
+               data:{username:$('#usename').val(),password:$('#password').val()},
+               success:function(data){
+                   {#console.log(data)#}
+                   console.log(data);
+                   $('#result').html(data).css({'margin-left':20,'color':'red'})
+               },
+         　　　　　　
+               error: function (jqXHR, textStatus, err) {
+                        console.log(arguments);
+                    },
+
+               complete: function (jqXHR, textStatus) {
+                        console.log(textStatus);
+                },
+
+               statusCode: {
+                    '403': function (jqXHR, textStatus, err) {
+                          console.log(arguments);
+                     },
+
+                    '400': function (jqXHR, textStatus, err) {
+                        console.log(arguments);
+                    }
+                }
+
+           })
+
+       })
+
+</script>
+</html>
