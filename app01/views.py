@@ -1,121 +1,62 @@
-from django.shortcuts import render,HttpResponse,redirect
-from django.db.models import Max,Min,Avg,Count
-from app01.models import login,book
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-# Create your views here.
-# from app01.models import Book,Publish,Author,AuthorDetail
-# Publish = Publish.objects.all()
-# def wudi(request):
-#     # publish_obj = Publish.objects.get(nid=1)
-#     # print(publish_obj)
-#     # book_obj = Book.objects.create(title="金瓶眉", publishDate="2012-12-12", price=100, publish=publish_obj)
-#     # book_obj = Book.objects.create(title="追风筝的人", price=200, publishDate="2012-11-12", publish_id=1)
-#     # alex_obj= Author.objects.filter(name='alex').first()
-#     # egon_obj = Author.objects.filter(name='yuan').first()
-#     # book_obj = Book.objects.filter(title='追风筝的人').first()
-#     # book_obj.authors.add(alex_obj,egon_obj)
-#     # book_obj = Book.objects.filter(nid=1).first()
-#     # publish_obj = Publish.objects.filter(book=book_obj).first()
-#     # print(book_objpublish.city)
-#     # publish = Publish.objects.filter(name='苹果出版社').first()
-#     # book_list = publish.book_set.all()
-#     # for i in book_list:
-#     #     print(i.title)
-#     # addr_obj = AuthorDetail.objects.get(addr='北京')
-#     # print(addr_obj.author.name)
-#     # book_obj = Book.objects.filter(publish__name='苹果出版社').values('title','price')
-#     # author_list = book_obj.authors.all()
-#     # book_obj = Book.objects.filter(authors__authorDetail__telephone='110').values('authors__name)
-#     # for i in author_list:
-#     # book_obj = Book.objects.all().aggregate(MAX = Max('price'),MIN = Min("price"),AVG = Avg('price'))
-#     #     print(i.name,i.authorDetail.telephone
-#     book_obj = Book.objects.annotate(c = Count('publish__id')).values_list('publish__name','c')
-#     # for i in book_obj:
-#     # book_obj = Book.objects.annotate(c = Count("authors")).values_list('c','a')
-#     #
-#     #     print(i.publish.name,i.c)
-#     print(book_obj)
-#
-#     return HttpResponse("OK")
-def index2(request):
-    # book_list = book.objects.all()
-    # paginator = Paginator(book_list,10)
-    # print('count:',paginator.count)
-    # print('num_Pages:',paginator.num_pages)
-    # print('page_range:',paginator.page_range)
+# forms组件
+from django.shortcuts import render
+from django import forms
+from django.forms import widgets
 
-    # for i in page1:
-    #     print(i)
-    # print(page1.object_list)
-    # page2 = paginator.page(2)
-    # # for i in page2:
-    # #     print(i)
-    # #
-    # print('是否有下一页', page2.has_next())
-    # print('下一页的页码', page2.next_page_number())
-    # print('是否有上一页', page2.has_previous())
-    # print('上一页的页码', page2.previous_page_number())
-    book_list = book.objects.all()
-    paginator = Paginator(book_list, 10)
-    page = request.GET.get('page',1)
-    currentPage = int(page)
-    page1 = paginator.page(page)
-    return render(request, 'page.html', {"book_list":book_list,'paginator':paginator,'currentPage':currentPage,'page1':page1})
+wid_01=widgets.TextInput(attrs={"class":"form-control"})
+wid_02=widgets.PasswordInput(attrs={"class":"form-control"})
 
-def index(request):
-    #  如果页数十分多时，换另外一种显示方式
-    book_list = book.objects.all()
+from django.core.exceptions import ValidationError
 
-    paginator = Paginator(book_list, 1)
-    page = request.GET.get('page', 1)
-    currentPage = int(page)
-    if paginator.num_pages > 11:
 
-        if currentPage - 5 < 1:
-            pageRange = range(1, 11)
-        elif currentPage + 5 > paginator.num_pages:
-            pageRange = range(currentPage - 5, paginator.num_pages + 1)
-
+class UserForm(forms.Form):
+    name = forms.CharField(max_length=32,
+                         widget=wid_01
+                         )
+    pwd=forms.CharField(max_length=32,widget=wid_02)
+    r_pwd=forms.CharField(max_length=32,widget=wid_02)
+    email=forms.EmailField(widget=wid_01)
+    tel=forms.CharField(max_length=32,widget=wid_01)
+    # 局部钩子
+    def clean_name(self):
+        print('clean_name')
+        val=self.cleaned_data.get("name")
+        print('val',val)
+        if not val.isdigit():
+            print('digit')
+            return val
         else:
-            pageRange = range(currentPage - 5, currentPage + 5)
+            print('error')
+            raise ValidationError("用户名不能是纯数字!")
 
-    else:
-        pageRange = paginator.page_range
+    # 全局钩子
 
-    try:
-        print(page)
-        book_list = paginator.page(page)
-    except PageNotAnInteger:
-        book_list = paginator.page(1)
-    except EmptyPage:
-        book_list = paginator.page(paginator.num_pages)
+    def clean(self):
+        print('clean')
+        pwd=self.cleaned_data.get("pwd")
+        print('pwd' ,pwd)
+        r_pwd=self.cleaned_data.get("r_pwd")
+        print('r_pwd',r_pwd)
 
-    return render(request, "page.html", locals())
-def add_book(request):
-    n = 1
-    for i in range(100):
-        ret = book.objects.create(title='西游记'+'%s'%n,publish='北京出版社',price=120+n)
-        n+=1
-    return HttpResponse('ok')
+        if pwd==r_pwd:
 
-def add_login(request):
-    login.objects.create(usename ='chen',password=123)
-    return HttpResponse('OK')
+            print('self.cleaned_data',self.cleaned_data)
+            return self.cleaned_data
+        else:
+            print('clean_error')
+            raise ValidationError('两次密码不一致!')
 
-def test(request):
-    # return render(request,'nb.html')
-    return HttpResponse('ok')
 
-def handle(request):
-    return render(request,'ajax_test.html')
+def register(request):
 
-def login_do(request):
-    print(request.POST)
-    user = request.POST.get('username')
-    pwd = request.POST.get('password')
-    ret = login.objects.filter(usename=user,password=pwd).first()
-    if ret:
-        return HttpResponse('登录成功')
-    # print(user,pwd)
-    else:
-        return HttpResponse('账号或密码错误')
+    if request.method=="POST":
+        form=UserForm(request.POST)
+        if form.is_valid():
+            print('form.cleaned_data',form.cleaned_data)       # 所有干净的字段以及对应的值
+        else:
+            clean_error=form.errors.get("__all__")
+            print('clean_error',clean_error)
+
+        return render(request,"form_test.html",locals())
+    form=UserForm()
+    return render(request,"form_test.html",locals())

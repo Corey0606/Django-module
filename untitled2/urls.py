@@ -19,12 +19,13 @@ from app01 import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('register/',views.register)
     # path('wu/',views.wudi),
-    path('ajax/',views.handle),
-    path('handle_Ajax/',views.test),
-    path('login_do/',views.login_do),
-    path('add/',views.add_login),
-    path('add_book/',views.add_book),
-    path('index/',views.index)
+    # path('ajax/',views.handle),
+    # path('handle_Ajax/',views.test),
+    # path('login_do/',views.login_do),
+    # path('add/',views.add_login),
+    # path('add_book/',views.add_book),
+    # path('index/',views.index)
     # path('index1/',views.index1)
 ]
