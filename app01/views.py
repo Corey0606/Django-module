@@ -1,62 +1,29 @@
 # forms组件
-from django.shortcuts import render
-from django import forms
-from django.forms import widgets
-
-wid_01=widgets.TextInput(attrs={"class":"form-control"})
-wid_02=widgets.PasswordInput(attrs={"class":"form-control"})
-
-from django.core.exceptions import ValidationError
+from django.shortcuts import render,HttpResponse,redirect
+from app01.models import login
 
 
-class UserForm(forms.Form):
-    name = forms.CharField(max_length=32,
-                         widget=wid_01
-                         )
-    pwd=forms.CharField(max_length=32,widget=wid_02)
-    r_pwd=forms.CharField(max_length=32,widget=wid_02)
-    email=forms.EmailField(widget=wid_01)
-    tel=forms.CharField(max_length=32,widget=wid_01)
-    # 局部钩子
-    def clean_name(self):
-        print('clean_name')
-        val=self.cleaned_data.get("name")
-        print('val',val)
-        if not val.isdigit():
-            print('digit')
-            return val
+def login_path(request):
+    print(2)
+    if request.method == 'POST':
+        print(1)
+        usename = request.POST.get('usename')
+        password = request.POST.get('password')
+        obj = login.objects.filter(usename=usename,password=password).first()
+        if obj:
+            reponse = HttpResponse('登录成功')
+            reponse.set_cookie('is_login',True)
+            reponse.set_cookie('use', usename)
+            return reponse
         else:
-            print('error')
-            raise ValidationError("用户名不能是纯数字!")
-
-    # 全局钩子
-
-    def clean(self):
-        print('clean')
-        pwd=self.cleaned_data.get("pwd")
-        print('pwd' ,pwd)
-        r_pwd=self.cleaned_data.get("r_pwd")
-        print('r_pwd',r_pwd)
-
-        if pwd==r_pwd:
-
-            print('self.cleaned_data',self.cleaned_data)
-            return self.cleaned_data
-        else:
-            print('clean_error')
-            raise ValidationError('两次密码不一致!')
+            pass
+    return render(request,'login_test.html')
 
 
-def register(request):
-
-    if request.method=="POST":
-        form=UserForm(request.POST)
-        if form.is_valid():
-            print('form.cleaned_data',form.cleaned_data)       # 所有干净的字段以及对应的值
-        else:
-            clean_error=form.errors.get("__all__")
-            print('clean_error',clean_error)
-
-        return render(request,"form_test.html",locals())
-    form=UserForm()
-    return render(request,"form_test.html",locals())
+def index(request):
+    cookie = request.COOKIES.get('is_login')
+    use = request.COOKIES.get('use')
+    if cookie:
+        return render(request,'login_win.html',{'use':use})
+    else:
+        return redirect('/login/')
