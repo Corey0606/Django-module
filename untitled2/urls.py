@@ -21,13 +21,15 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/',views.login_path),
     path('index/',views.index),
-    path('set_session/', views.set_session),
-    # path('ajax/',views.handle),
-    # path('handle_Ajax/',views.test),
-    # path('login_do/',views.login_do),
-    path('add/',views.add_login),
-    path('get_session/',views.get_session),
-    path('del_session/',views.del_session)
+    # path('set_session/', views.set_session),
+    path('layout/',views.layout_do),
+path('index1/',views.index1)
+    # # path('ajax/',views.handle),
+    # # path('handle_Ajax/',views.test),
+    # # path('login_do/',views.login_do),
+    # path('add/',views.add_login),
+    # path('get_session/',views.get_session),
+    # path('del_session/',views.del_session)
     # path('add_book/',views.add_book),
     # path('index/',views.index)
     # path('index1/',views.index1)
