@@ -47,8 +47,9 @@ def layout_do(request):
     auth.logout(request)
     return HttpResponse('退出')
 
-@login_required
+# @login_required
 def index(request):
+    deedqdqw
     return render(request,'login_win.html')
 
 def index1(request):

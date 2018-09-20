@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
-
+# from untitled2.middlething import m1,m2
+from django.utils.deprecation import MiddlewareMixin
+# import middlething
+# from middlething import Md1,Md2
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -48,6 +51,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'middlething.Md1',
+    'middlething.Md2'
+    # 'm1.middleware',
+    # 'm2.middleware'
 ]
 
 ROOT_URLCONF = 'untitled2.urls'
